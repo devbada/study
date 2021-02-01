@@ -1,3 +1,6 @@
+# 환영해요
+이 저장소는 백기선님의 강좌를 Forked하여 추가적인 개인공부를 위해 사용하고 있는 저장소이며, 모든 샘플의 백기선님의 자료입니다.
+
 # Welcome
 Hi, This is Keesun (AKA, Whiteship) and this repository would contain the things that I am interested in.
 **ALL THE CONTENTS ARE OWNED AND MADE BY Keesun.**
@@ -23,4 +26,7 @@ Hi, This is Keesun (AKA, Whiteship) and this repository would contain the things
 
 # Cheet Sheet
 ## [Docker cheetsheet](docker-cmds.md)
+
+#2021.01.16
+## study test (JUnit)관련 추가
 
