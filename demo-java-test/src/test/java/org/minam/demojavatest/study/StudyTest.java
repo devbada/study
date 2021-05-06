@@ -1,6 +1,7 @@
-package org.minam.demojavatest;
+package org.minam.demojavatest.study;
 
 
+import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.DisplayNameGenerator.ReplaceUnderscores;
 import org.junit.jupiter.api.TestInstance.Lifecycle;
@@ -10,10 +11,12 @@ import org.junit.jupiter.params.provider.CsvSource;
 import org.junit.jupiter.params.provider.EmptySource;
 import org.junit.jupiter.params.provider.NullSource;
 import org.junit.jupiter.params.provider.ValueSource;
+import org.minam.demojavatest.FastTest;
 import org.minam.demojavatest.domain.Study;
-import org.minam.demojavatest.study.StudyStatus;
 
 import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
@@ -21,6 +24,8 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 
 @DisplayNameGeneration(ReplaceUnderscores.class)
 @TestInstance(Lifecycle.PER_CLASS)
+@TestMethodOrder(MethodOrderer.MethodName.class)
+@Slf4j
 class StudyTest {
 
     int value = 1;
@@ -39,7 +44,7 @@ class StudyTest {
 
         assertTrue( study.getLimit() > 0, () -> "최대 참석인원은 0명보다 많아야 합니다.");
         */
-        // Functional Interface () 여러개의 조건문을 한번에 실행할 수 있다.
+        // Functional Interface () 여러개의 조건문을 한번에 실행할 수 있다. ::
 
         study.setLimit(100);
         assertAll(
@@ -60,18 +65,18 @@ class StudyTest {
     @FastTest
     @DisplayName("조건에 따라 테스트하기")
     void conditional_test() {
-        System.out.println("Environment is " + System.getenv("LOCAL"));
-        System.out.println(value++);
+        log.info("Environment is " + System.getenv("LOCAL"));
+        log.info(String.valueOf(value++));
         String env = System.getenv("TEST_ENV");
 
         assumingThat("LOCAL".equalsIgnoreCase(env), () -> {
-            System.out.println("local test");
+            log.info("local test");
             Study study = new Study(50, "local test");
             assertThat(study.getLimit()).isGreaterThan(10);
         });
 
         assumingThat(null == env, () -> {
-            System.out.println("env is null but test is okay");
+            log.info("env is null but test is okay");
             Study study = new Study(100, "env is null");
             assertThat(study.getStatus()).isEqualTo(StudyStatus.DRAFT);
         });
@@ -80,73 +85,74 @@ class StudyTest {
     @Test
     @EnabledOnOs({OS.LINUX, OS.WINDOWS})
     void onMacOthersTest() {
-        System.out.println("Except MAC OS");
+        log.info("Except MAC OS");
     }
 
     @FastTest
     @EnabledOnOs(OS.MAC)
     void onMacTest() {
-        System.out.println("MAC Test");
+        log.info("MAC Test");
     }
 
     @Test
     @EnabledOnJre({JRE.JAVA_8, JRE.JAVA_9, JRE.JAVA_10})
     void run_on_jre_8 () {
-        System.out.println("JRE 8 TEST");
+        log.info("JRE 8 TEST");
     }
 
     @Test
     @EnabledIfEnvironmentVariable(named = "TEST_ENV", matches = "local")
     void environmentVariableTest() {
-        System.out.println("You are running on 'local' variable environment");
+        log.info("You are running on 'local' variable environment");
     }
 
     @Test
     @DisplayName("create Test 입니다. 🥱") // emoji도 표현이 된다.
     void create() {
-        System.out.println("create");
+        log.info("create");
         Study study = new Study();
         assertNotNull(study);
     }
 
     @BeforeAll // 테스트 클래스 내의 여러 테스트가 모두 실행하기 전에 한번 호출됨, static 이어야 하고, void여야 하며 private 는 안됨. - 그러나, 테스트 순서 정하기에 따른 TestInstance를 클래스에 PER_CLASS로 지정하면 static이 없어도 된다)
     static void beforeAll() {
-        System.out.println("BeforeAll");
+        log.info("BeforeAll");
     }
 
     @Test
     @Disabled // 테스트를 실행하지 않음
     void not_run_test() {
-        System.out.println("NotRunning");
+        log.info("NotRunning");
     }
 
     @AfterAll // 모든 테스트가 끝나고 한번 실행
     static void afterAll() {
-        System.out.println("AfterAll");
+        log.info("AfterAll");
 
     }
 
     @BeforeEach // 각각의 테스트가 실행될 때마다 실행. static이 아니어도 된다.
     void beforeEach() {
-        System.out.println("BeforeEach");
+        String formatDate = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyyMMdd HH:mm:ss.SSS"));
+        log.info(formatDate);
     }
 
     @AfterEach // 각각의 테스트가 끝날 때마마다 실행,
     void afterEach() {
-        System.out.println("AfterEach");
+        log.info("AfterEach");
 
     }
 
     @Test
     void underscore_test() {
-        System.out.println("underscore_test");
+        log.info("underscore_test");
     }
 
     @DisplayName("Parameterized Test")
     @ParameterizedTest(name="{index} {displayName} message={0}")
     @ValueSource(strings = {"겨울은", "가고", "봄이", "오고", "있어요"})
     void parameterizedTest(String message) {
-        System.out.println(message);
+        log.info(message);
     }
 
     @DisplayName("Parameterized Test")
@@ -155,14 +161,17 @@ class StudyTest {
     @NullSource
     @CsvSource({"하늘이", "맑아요"})
     void parameterized_sources_test(String message) {
-        System.out.println(message);
+        log.info(message);
     }
 
     @DisplayName("Limit Study 박살내기")
     @ParameterizedTest(name="{index} {displayName} limit={0}")
     @ValueSource(ints = {0, 1, 100, -1})
     void limitStudyPrameterizeTest(Integer limit) {
-        Study study = new Study(limit, "limitStudyParamerized");
-        System.out.println(study.getLimit());
+        assertThrows(IllegalArgumentException.class, () -> {
+            Study study = new Study(limit, "limitStudyParamerized");
+            log.info(String.valueOf(study.getLimit()));
+        });
+
     }
 }

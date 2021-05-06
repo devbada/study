@@ -1,12 +1,12 @@
 package org.minam.demojavatest.domain;
 
-import lombok.*;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.Setter;
 
 @Builder
 @Getter
 @Setter
-@AllArgsConstructor
-@NoArgsConstructor
 public class Member {
     private Long id;
     private String name;
